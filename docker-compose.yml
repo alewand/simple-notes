@@ -26,6 +26,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_PORT: ${DB_PORT}
       DB_HOST: db
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     networks:
@@ -33,6 +34,7 @@ services:
 
 networks:
   app-network:
+
 
 volumes:
   db_data:
