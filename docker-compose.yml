@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16
+    container_name: simplenotes-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - app-network
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  server:
+    container_name: simplenotes-server
+    build:
+      context: ./server
+    depends_on:
+      - db
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: db
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  db_data:
