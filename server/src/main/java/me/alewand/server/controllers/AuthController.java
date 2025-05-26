@@ -7,9 +7,8 @@ import jakarta.validation.Valid;
 import me.alewand.server.models.User;
 import me.alewand.server.services.AuthService;
 import me.alewand.server.services.TokenService;
-import me.alewand.server.types.LoginRequest;
-
-import java.util.Map;
+import me.alewand.server.types.requests.LoginRequest;
+import me.alewand.server.types.responses.LoginResponse;
 
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
@@ -34,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         var nicknameOrEmail = request.getNicknameOrEmail();
         var password = request.getPassword();
         User user = authService.getAuthenticatedUser(nicknameOrEmail, password, "login");
@@ -49,8 +48,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header("Set-Cookie", refreshTokenCookie.toString())
-                .body(Map.of("message", "Zalogowano pomyślnie.", "accessToken", accessToken, "user", user));
-
+                .body(new LoginResponse("Zalogowano pomyślnie.", accessToken, user));
     }
 
 }

@@ -1,4 +1,4 @@
-package me.alewand.server.types;
+package me.alewand.server.types.requests;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

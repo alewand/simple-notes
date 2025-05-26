@@ -30,7 +30,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import me.alewand.server.types.UserRole;
+import me.alewand.server.types.others.UserRole;
 
 @Getter
 @Setter

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import me.alewand.server.constants.Constants;
 import me.alewand.server.errors.ApiException;
+import me.alewand.server.types.responses.CommonResponse;
 
 /**
  * Global exception handler for REST controllers.
@@ -41,21 +41,20 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<Map<String, String>> handleApiException(ApiException ex) {
+    public ResponseEntity<CommonResponse> handleApiException(ApiException ex) {
         logError(ex);
         return ResponseEntity.status(ex.getStatusCode())
-                .body(Map.of(Constants.MESSAGE_STR, ex.getMessage()));
+                .body(new CommonResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<CommonResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         String message = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .findFirst()
                 .orElse("Błąd walidacji danych. Spróbuj ponownie.");
         return ResponseEntity.badRequest()
-                .body(Map.of(Constants.MESSAGE_STR,
-                        message));
+                .body(new CommonResponse(message));
     }
 
 }
