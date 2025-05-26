@@ -1,9 +1,9 @@
 package me.alewand.server.models;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import lombok.Setter;
 @Table(name = "sessions")
 public class Session {
 
-    public Session(String token, LocalDateTime expiresAt, User user) {
+    public Session(String token, Instant expiresAt, User user) {
         this.token = token;
         this.expiresAt = expiresAt;
         this.user = user;
@@ -40,12 +40,12 @@ public class Session {
     private String token;
 
     @Column(nullable = false)
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime startedAt;
+    private Instant startedAt;
 }

@@ -3,7 +3,6 @@ package me.alewand.server.services;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
@@ -112,7 +111,7 @@ public class TokenService {
         var hashedToken = DigestUtils.sha256Hex(refreshToken);
         Instant expiresAt = Instant.now().plus(7, ChronoUnit.DAYS);
 
-        Session sesion = new Session(hashedToken, LocalDateTime.from(expiresAt), user);
+        Session sesion = new Session(hashedToken, expiresAt, user);
 
         sessionRepository.save(sesion);
 
@@ -166,7 +165,7 @@ public class TokenService {
         Session session = sessionRepository.findByToken(hashedRefreshToken)
                 .orElseThrow(InvalidRefreshTokenException::new);
 
-        if (session.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (session.getExpiresAt().isBefore(Instant.now())) {
             throw new ExpiredRefreshTokenException();
         }
 
