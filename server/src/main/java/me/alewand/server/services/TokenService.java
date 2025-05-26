@@ -101,13 +101,31 @@ public class TokenService {
                 .build();
     }
 
+    /*
+     * Clears the refresh token cookie by setting its value to an empty string
+     * and max age to 0.
+     */
+    public ResponseCookie clearRefreshTokenCookie() {
+        return ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+    }
+
     /**
      * Refreshes (generates new) the access token using the provided refresh token.
      *
      * @param refreshToken The refresh token to validate and use for generating a
      *                     new access token.
      * @return A new access token as a String.
-     * @throws ApiException if the refresh token is invalid or expired.
+     * @throws ExpiredRefreshTokenException if the refresh token has expired.
+     * @throws InvalidRefreshTokenException if the refresh token is invalid or not
+     *                                      found.
+     * @throws UserNotFoundException        if the user associated with the session
+     *                                      is not found.
      */
     public String refreshAccessToken(String refreshToken) {
         var hashedRefreshToken = DigestUtils.sha256Hex(refreshToken);

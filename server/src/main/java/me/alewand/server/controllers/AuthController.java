@@ -10,12 +10,14 @@ import me.alewand.server.services.TokenService;
 import me.alewand.server.types.requests.LoginRequest;
 import me.alewand.server.types.requests.RegisterRequest;
 import me.alewand.server.types.responses.LoginResponse;
+import me.alewand.server.types.responses.RefreshResponse;
 
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -71,6 +73,13 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .body(new LoginResponse("Zarejestrowano pomyślnie.", accessToken, user));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshResponse> refresh(
+            @CookieValue(name = "refreshToken") String refreshToken) {
+        var accessToken = tokenService.refreshAccessToken(refreshToken);
+        return ResponseEntity.ok(new RefreshResponse("Odświeżono token dostępu.", accessToken));
     }
 
 }
