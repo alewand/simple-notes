@@ -40,6 +40,12 @@ import me.alewand.server.types.others.UserRole;
 @Table(name = "users")
 public class User implements UserDetails {
 
+    public User(String nickname, String email, String password) {
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue
     @JsonIgnore

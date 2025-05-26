@@ -8,6 +8,7 @@ import me.alewand.server.models.User;
 import me.alewand.server.services.AuthService;
 import me.alewand.server.services.TokenService;
 import me.alewand.server.types.requests.LoginRequest;
+import me.alewand.server.types.requests.RegisterRequest;
 import me.alewand.server.types.responses.LoginResponse;
 
 import org.jboss.logging.MDC;
@@ -49,6 +50,27 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .body(new LoginResponse("Zalogowano pomyślnie.", accessToken, user));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest request) {
+        var nickname = request.getNickname();
+        var email = request.getEmail();
+        var password = request.getPassword();
+
+        User user = authService.registerUser(nickname, email, password, "register");
+        var accessToken = tokenService.generateAccessToken(user);
+        var refreshToken = tokenService.generateRefreshToken(user);
+        ResponseCookie refreshTokenCookie = tokenService.generateRefreshTokenCookie(refreshToken);
+
+        MDC.put("service", "register");
+        MDC.put("nickname", nickname);
+        logger.info("Użytkownik " + user.getNickname() + " zarejestrował się pomyślnie.");
+        MDC.clear();
+
+        return ResponseEntity.ok()
+                .header("Set-Cookie", refreshTokenCookie.toString())
+                .body(new LoginResponse("Zarejestrowano pomyślnie.", accessToken, user));
     }
 
 }

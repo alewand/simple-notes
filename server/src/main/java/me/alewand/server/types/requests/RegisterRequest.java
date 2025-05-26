@@ -5,18 +5,21 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class LoginRequest {
+public class RegisterRequest {
 
-    @NotNull(message = "Login jest wymagany.")
-    @NotBlank(message = "Login nie może być pusty.")
-    private String nicknameOrEmail;
+    @NotNull(message = "Nick jest wymagany.")
+    private String nickname;
+
+    @NotNull(message = "Email jest wymagany.")
+    private String email;
 
     @NotNull(message = "Hasło jest wymagane.")
     @NotBlank(message = "Hasło nie może być puste.")
     private String password;
 
-    public LoginRequest(String nicknameOrEmail, String password) {
-        this.nicknameOrEmail = nicknameOrEmail.trim();
+    public RegisterRequest(String nickname, String email, String password) {
+        this.nickname = nickname.trim();
+        this.email = email.trim();
         this.password = password.trim();
     }
 }

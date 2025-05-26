@@ -18,10 +18,11 @@ import me.alewand.server.repositories.UserRepository;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -29,6 +30,7 @@ public class AuthService {
      *
      * @param nicknameOrEmail the user's nickname or email
      * @param password        the user's password
+     * @param service         the service name for context (e.g., "login")
      * @return the authenticated User object
      * @throws UserNotFoundDuringAuthenticationException    if the user is not found
      * @throws InvalidPasswordDuringAuthenticationException if the password is
@@ -46,6 +48,26 @@ public class AuthService {
                     Map.of("nicknameOrEmail", nicknameOrEmail));
 
         return user;
+    }
+
+    /**
+     * Registers a new user with the provided nickname, email, and password.
+     * 
+     * @param nickname the user's nickname
+     * @param email    the user's email
+     * @param password the user's password
+     * @param service  the service name for context (e.g., "registration")
+     * @return the registered User object
+     * @throws NicknameTakenException if the nickname is already taken
+     * @throws EmailTakenException    if the email is already taken
+     */
+    public User registerUser(String nickname, String email, String password, String service) {
+        isNicknameTaken(nickname, service);
+        isEmailTaken(email, service);
+        var hashedPassword = passwordEncoder.encode(password);
+
+        User user = new User(nickname, email, hashedPassword);
+        return userRepository.save(user);
     }
 
     /**
