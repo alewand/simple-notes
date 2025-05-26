@@ -28,18 +28,22 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (request.getRequestURI().startsWith("/api/auth")) {
+        var path = request.getRequestURI();
+
+        if (path.equals("/api/auth/login") ||
+                path.equals("/api/auth/register") ||
+                path.equals("/api/auth/refresh")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authHeader = request.getHeader("Authorization");
+        var authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadCredentialsException("Brak wymaganego tokena autoryzacji.");
         }
 
-        String accessToken = authHeader.substring(7);
+        var accessToken = authHeader.substring(7);
 
         try {
             var authentication = tokenService.verifyAccessToken(accessToken);

@@ -40,8 +40,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        var nicknameOrEmail = request.getNicknameOrEmail();
-        var password = request.getPassword();
+        var nicknameOrEmail = request.getNicknameOrEmail().trim();
+        var password = request.getPassword().trim();
         User user = authService.getAuthenticatedUser(nicknameOrEmail, password, "login");
         var accessToken = tokenService.generateAccessToken(user);
         var refreshToken = tokenService.generateRefreshToken(user);
@@ -75,9 +75,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest request) {
-        var nickname = request.getNickname();
-        var email = request.getEmail();
-        var password = request.getPassword();
+        var nickname = request.getNickname().trim();
+        var email = request.getEmail().trim();
+        var password = request.getPassword().trim();
 
         User user = authService.registerUser(nickname, email, password, "register");
         var accessToken = tokenService.generateAccessToken(user);
