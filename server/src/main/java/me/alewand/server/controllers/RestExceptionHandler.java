@@ -9,7 +9,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 
 import jakarta.validation.ConstraintViolation;
@@ -73,6 +73,16 @@ public class RestExceptionHandler {
     public ResponseEntity<CommonResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         String message = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
+                .findFirst()
+                .orElse("Błąd walidacji danych. Spróbuj ponownie.");
+        return ResponseEntity.badRequest()
+                .body(new CommonResponse(message));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CommonResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("Błąd walidacji danych. Spróbuj ponownie.");
         return ResponseEntity.badRequest()
