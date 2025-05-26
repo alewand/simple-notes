@@ -9,6 +9,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import org.springframework.web.bind.MissingRequestCookieException;
 
 import jakarta.validation.ConstraintViolation;
@@ -80,7 +81,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<CommonResponse> handleMissingRequestCookieException(MissingRequestCookieException ex) {
-        return ResponseEntity.badRequest().body(new CommonResponse("Brak tokena odświeżającego. Spróbuj ponownie."));
+        return ResponseEntity.badRequest().body(new CommonResponse("Nie znaleziono sesji. Nie jesteś zalogowany."));
     }
 
 }

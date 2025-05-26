@@ -9,6 +9,7 @@ import me.alewand.server.services.AuthService;
 import me.alewand.server.services.TokenService;
 import me.alewand.server.types.requests.LoginRequest;
 import me.alewand.server.types.requests.RegisterRequest;
+import me.alewand.server.types.responses.CommonResponse;
 import me.alewand.server.types.responses.LoginResponse;
 import me.alewand.server.types.responses.RefreshResponse;
 
@@ -17,7 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -52,6 +55,22 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .body(new LoginResponse("Zalogowano pomyślnie.", accessToken, user));
+    }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<CommonResponse> logout(@AuthenticationPrincipal User user,
+            @CookieValue(name = "refreshToken") String refreshToken) {
+        tokenService.revokeRefreshToken(refreshToken, "logout", user.getNickname());
+        var clearCookie = tokenService.clearRefreshTokenCookie();
+
+        MDC.put("service", "logout");
+        MDC.put("nickname", user.getNickname());
+        logger.info("Użytkownik " + user.getNickname() + " wylogował się pomyślnie.");
+        MDC.clear();
+
+        return ResponseEntity.ok()
+                .header("Set-Cookie", clearCookie.toString())
+                .body(new CommonResponse("Wylogowano pomyślnie."));
     }
 
     @PostMapping("/register")

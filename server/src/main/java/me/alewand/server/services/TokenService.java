@@ -14,10 +14,15 @@ import javax.crypto.SecretKey;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import me.alewand.server.constants.Constants;
 import me.alewand.server.errors.ApiException;
 import me.alewand.server.errors.ExpiredRefreshTokenException;
@@ -37,6 +42,7 @@ public class TokenService {
 
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
+    private JwtParser jwtParser;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -44,6 +50,14 @@ public class TokenService {
     public TokenService(UserRepository userRepository, SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
+    }
+
+    @PostConstruct
+    public void init() {
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.jwtParser = Jwts.parser()
+                .verifyWith(key)
+                .build();
     }
 
     /**
@@ -59,12 +73,32 @@ public class TokenService {
 
         return Jwts.builder()
                 .subject(user.getUserId().toString())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expiresAt))
                 .claim("nickname", user.getNickname())
                 .claim("role", user.getRole().name())
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiresAt))
                 .signWith(key)
                 .compact();
+    }
+
+    /**
+     * Verifies the provided access token and returns an authentication token.
+     *
+     * @param accessToken The JWT access token to verify.
+     * @return A UsernamePasswordAuthenticationToken if the token is valid.
+     * @throws UserNotFoundException if the user associated with the token is not
+     *                               found.
+     * @throws JwtException          if the token is invalid or expired.
+     */
+    public UsernamePasswordAuthenticationToken verifyAccessToken(String accessToken) {
+        Claims claims = jwtParser.parseSignedClaims(accessToken).getPayload();
+        UUID userId = UUID.fromString(claims.getSubject());
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        return new UsernamePasswordAuthenticationToken(user, null,
+                user.getAuthorities());
     }
 
     /**
@@ -146,13 +180,15 @@ public class TokenService {
      * Revokes the refresh token by deleting the associated session.
      *
      * @param refreshToken The refresh token to revoke.
+     * @param service      The service name for logging purposes.
+     * @param nickname     The nickname of the user for logging purposes.
      * @throws ApiException if the session for the provided token is not found.
      */
-    public void revokeRefreshToken(String refreshToken) {
+    public void revokeRefreshToken(String refreshToken, String service, String nickname) {
         var hashedRefreshToken = DigestUtils.sha256Hex(refreshToken);
         Session session = sessionRepository.findByToken(hashedRefreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(
-                        Map.of(Constants.SERVICE_STR, "revoke-session")));
+                        Map.of(Constants.SERVICE_STR, service, "nickname", nickname)));
 
         sessionRepository.delete(session);
     }
