@@ -27,6 +27,7 @@ services:
       DB_PORT: ${DB_PORT}
       DB_HOST: db
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     networks:
