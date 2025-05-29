@@ -12,7 +12,6 @@ import me.alewand.server.types.responses.NotesResponse;
 
 import java.util.UUID;
 
-import org.apache.catalina.connector.Response;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -120,7 +120,7 @@ public class AuthController {
         return ResponseEntity.ok(new RefreshResponse("Odświeżono token dostępu.", accessToken));
     }
 
-    @DeleteMapping("/delete-account")
+    @PostMapping("/delete-account")
     public ResponseEntity<CommonResponse> deleteAccount(@AuthenticationPrincipal User user,
             @Valid @RequestBody ConfirmRequest request) {
         var nickname = request.getNickname().trim();

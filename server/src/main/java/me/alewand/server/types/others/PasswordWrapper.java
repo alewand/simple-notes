@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PasswordValidator {
+public class PasswordWrapper {
 
     @NotBlank(message = "Hasło nie może być puste.")
     @Pattern(regexp = "^\\S*$", message = "Hasło nie może zawierać spacji.")

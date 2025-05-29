@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import me.alewand.server.errors.NoteToDeleteDoesntBelongToUserException;
 import me.alewand.server.errors.NoteToDeleteNotFoundException;
 import me.alewand.server.errors.NoteToUpdateDoesntBelongToUserException;
@@ -13,11 +15,14 @@ import me.alewand.server.models.Note;
 import me.alewand.server.models.User;
 import me.alewand.server.repositories.NoteRepository;
 
+@Service
 public class NoteService {
 
     private final NoteRepository noteRepository;
+    private final ValidationService validationService;
 
-    public NoteService(NoteRepository noteRepository) {
+    public NoteService(NoteRepository noteRepository, ValidationService validationService) {
+        this.validationService = validationService;
         this.noteRepository = noteRepository;
     }
 
@@ -41,6 +46,7 @@ public class NoteService {
      */
     public void createNote(String title, String content, User user) {
         var note = new Note(title, content, user);
+        validationService.validate(note);
         noteRepository.save(note);
     }
 
@@ -68,6 +74,7 @@ public class NoteService {
 
         note.setTitle(title);
         note.setContent(content);
+        validationService.validate(note);
         noteRepository.save(note);
     }
 

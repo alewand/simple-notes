@@ -1,5 +1,8 @@
 package me.alewand.server.models;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,7 +39,7 @@ public class Note {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
-    private String noteId;
+    private UUID noteId;
 
     @NotBlank(message = "Tytuł notatki nie może być pusty.")
     @Size(min = 3, max = 100, message = "Tytuł notatki musi mieć od 3 do 100 znaków.")
@@ -48,11 +51,11 @@ public class Note {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private String createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false)
-    private String updatedAt;
+    private Instant updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

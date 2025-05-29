@@ -5,21 +5,25 @@ import java.util.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.validation.Validation;
 import me.alewand.server.errors.EmailTakenException;
 import me.alewand.server.errors.InvalidPasswordDuringAuthenticationException;
 import me.alewand.server.errors.NicknameTakenException;
 import me.alewand.server.errors.UserNotFoundDuringAuthenticationException;
 import me.alewand.server.models.User;
 import me.alewand.server.repositories.UserRepository;
-import me.alewand.server.types.others.PasswordValidator;
+import me.alewand.server.types.others.PasswordWrapper;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ValidationService validationService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            ValidationService validationService) {
+        this.validationService = validationService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -64,11 +68,14 @@ public class AuthService {
         isNicknameTaken(nickname, service);
         isEmailTaken(email, service);
 
-        var passwordValidator = new PasswordValidator(password);
+        var passwordValidation = new PasswordWrapper(password);
+        validationService.validate(passwordValidation);
 
-        var hashedPassword = passwordEncoder.encode(passwordValidator.getPassword());
+        var hashedPassword = passwordEncoder.encode(passwordValidation.getPassword());
 
         User user = new User(nickname, email, hashedPassword);
+        validationService.validate(user);
+
         return userRepository.save(user);
     }
 

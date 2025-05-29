@@ -2,8 +2,6 @@ package me.alewand.server.errors;
 
 import java.util.Map;
 
-import me.alewand.server.constants.Constants;
-
 public class InvalidRefreshTokenException extends ApiException {
 
     public InvalidRefreshTokenException() {
