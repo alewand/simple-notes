@@ -33,9 +33,28 @@ services:
     networks:
       - app-network
 
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: simplenotes-client
+    restart: unless-stopped
+    depends_on:
+      - server
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client/src:/app/src
+      - ./client/public:/app/public
+    networks:
+      - app-network
+    command: npm run dev
+
 networks:
   app-network:
-
+    driver: bridge
 
 volumes:
   db_data:
