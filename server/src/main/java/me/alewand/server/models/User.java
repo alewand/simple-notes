@@ -81,6 +81,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Session> sessions;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Note> notes;
+
     @Override
     @JsonIgnore
     public String getUsername() {
