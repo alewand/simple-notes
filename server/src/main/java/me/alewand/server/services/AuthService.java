@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import me.alewand.server.constants.Constants;
 import me.alewand.server.errors.EmailTakenException;
 import me.alewand.server.errors.InvalidPasswordDuringAuthenticationException;
 import me.alewand.server.errors.NicknameTakenException;
@@ -38,7 +37,7 @@ public class AuthService {
     public User getAuthenticatedUser(String nicknameOrEmail, String password, String service) {
         User user = userRepository.findByNicknameOrEmail(nicknameOrEmail, nicknameOrEmail)
                 .orElseThrow(() -> new UserNotFoundDuringAuthenticationException(
-                        Map.of(Constants.SERVICE_STR, service, "nicknameOrEmail", nicknameOrEmail)));
+                        Map.of("service", service, "nicknameOrEmail", nicknameOrEmail)));
 
         var isPasswordCorrect = passwordEncoder.matches(password, user.getPassword());
 
@@ -78,7 +77,7 @@ public class AuthService {
      */
     public void isNicknameTaken(String nickname, String service) {
         if (userRepository.existsByNickname(nickname))
-            throw new NicknameTakenException(Map.of(Constants.SERVICE_STR, service, "nickname", nickname));
+            throw new NicknameTakenException(Map.of("service", service, "nickname", nickname));
     }
 
     /**
@@ -90,7 +89,11 @@ public class AuthService {
      */
     public void isEmailTaken(String email, String service) {
         if (userRepository.existsByEmail(email))
-            throw new EmailTakenException(Map.of(Constants.SERVICE_STR, service, "email", email));
+            throw new EmailTakenException(Map.of("service", service, "email", email));
+    }
+
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 
 }

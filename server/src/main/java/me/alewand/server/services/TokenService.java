@@ -22,7 +22,6 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import me.alewand.server.constants.Constants;
 import me.alewand.server.errors.ApiException;
 import me.alewand.server.errors.ExpiredRefreshTokenException;
 import me.alewand.server.errors.InvalidRefreshTokenException;
@@ -125,7 +124,7 @@ public class TokenService {
      * @return A ResponseCookie containing the refresh token.
      */
     public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
-        return ResponseCookie.from("refreshToken", refreshToken)
+        return ResponseCookie.from("SimpleNotesSession", refreshToken)
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -139,7 +138,7 @@ public class TokenService {
      * and max age to 0.
      */
     public ResponseCookie clearRefreshTokenCookie() {
-        return ResponseCookie.from("refreshToken", "")
+        return ResponseCookie.from("SimpleNotesSession", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -170,7 +169,7 @@ public class TokenService {
         }
 
         User user = userRepository.findById(session.getUser().getUserId())
-                .orElseThrow(() -> new UserNotFoundException(Map.of(Constants.SERVICE_STR, "refresh-token")));
+                .orElseThrow(() -> new UserNotFoundException(Map.of("service", "refresh-token")));
 
         return generateAccessToken(user);
     }
@@ -187,7 +186,7 @@ public class TokenService {
         var hashedRefreshToken = DigestUtils.sha256Hex(refreshToken);
         Session session = sessionRepository.findByToken(hashedRefreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(
-                        Map.of(Constants.SERVICE_STR, service, "nickname", nickname)));
+                        Map.of("service", service, "nickname", nickname)));
 
         sessionRepository.delete(session);
     }
@@ -201,7 +200,7 @@ public class TokenService {
     public void revokeAllRefreshTokens(User user) {
         var sessions = sessionRepository.findAllByUser(user)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(
-                        Map.of(Constants.SERVICE_STR, "revoke-all-sessions", "nickname", user.getNickname())));
+                        Map.of("service", "logout-from-all-devices", "nickname", user.getNickname())));
 
         sessionRepository.deleteAll(sessions);
     }
