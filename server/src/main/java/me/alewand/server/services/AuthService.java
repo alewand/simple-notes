@@ -11,6 +11,7 @@ import me.alewand.server.errors.NicknameTakenException;
 import me.alewand.server.errors.UserNotFoundDuringAuthenticationException;
 import me.alewand.server.models.User;
 import me.alewand.server.repositories.UserRepository;
+import me.alewand.server.types.others.PasswordValidator;
 
 @Service
 public class AuthService {
@@ -62,7 +63,10 @@ public class AuthService {
     public User registerUser(String nickname, String email, String password, String service) {
         isNicknameTaken(nickname, service);
         isEmailTaken(email, service);
-        var hashedPassword = passwordEncoder.encode(password);
+
+        var passwordValidator = new PasswordValidator(password);
+
+        var hashedPassword = passwordEncoder.encode(passwordValidator.getPassword());
 
         User user = new User(nickname, email, hashedPassword);
         return userRepository.save(user);
@@ -92,6 +96,11 @@ public class AuthService {
             throw new EmailTakenException(Map.of("service", service, "email", email));
     }
 
+    /**
+     * Deletes a user from the repository.
+     *
+     * @param user the User object to delete
+     */
     public void deleteUser(User user) {
         userRepository.delete(user);
     }

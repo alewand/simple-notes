@@ -54,12 +54,14 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Nick nie może być pusty.")
     @Size(min = 3, max = 20, message = "Nick musi mieć od 3 do 20 znaków.")
-    @Pattern(regexp = "^\\w+$", message = "Tylko litery, cyfry i podkreślenia są dozwolone")
+    @Pattern(regexp = "^\\S*$", message = "Nick nie może zawierać spacji.")
+    @Pattern(regexp = "^\\w+$", message = "Nick nie może zawierać znaków specjalnych.")
     @Column(unique = true, nullable = false)
     private String nickname;
 
     @NotBlank(message = "Email nie może być pusty.")
     @Size(max = 255, message = "Email nie może przekraczać 255 znaków.")
+    @Pattern(regexp = "^\\S*$", message = "Email nie może zawierać spacji.")
     @Email(message = "Email ma nieprawidłowy format.")
     @Column(unique = true, nullable = false)
     private String email;

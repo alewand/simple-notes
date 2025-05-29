@@ -27,6 +27,12 @@ import lombok.Setter;
 @Table(name = "notes")
 public class Note {
 
+    public Note(String title, String content, User user) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+    }
+
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)

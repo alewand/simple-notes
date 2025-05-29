@@ -84,12 +84,13 @@ public class AuthController {
     public ResponseEntity<CommonResponse> logout(@AuthenticationPrincipal User user,
             @CookieValue(name = "SimpleNotesSession") String refreshToken) {
         tokenService.revokeRefreshToken(refreshToken, "logout", user.getNickname());
-        var clearCookie = tokenService.clearRefreshTokenCookie();
 
         MDC.put("service", "logout");
         MDC.put("nickname", user.getNickname());
         logger.info("Użytkownik " + user.getNickname() + " wylogował się pomyślnie.");
         MDC.clear();
+
+        var clearCookie = tokenService.clearRefreshTokenCookie();
 
         return ResponseEntity.ok()
                 .header("Set-Cookie", clearCookie.toString())
@@ -122,12 +123,10 @@ public class AuthController {
     @DeleteMapping("/delete-account")
     public ResponseEntity<CommonResponse> deleteAccount(@AuthenticationPrincipal User user,
             @Valid @RequestBody ConfirmRequest request) {
-        var serviceName = "delete-account";
-
         var nickname = request.getNickname().trim();
         var password = request.getPassword().trim();
 
-        var userFromConfirmation = authService.getAuthenticatedUser(nickname, password, serviceName);
+        var userFromConfirmation = authService.getAuthenticatedUser(nickname, password, "delete-account");
 
         if (!userFromConfirmation.getUserId().equals(user.getUserId())) {
 
@@ -146,7 +145,7 @@ public class AuthController {
 
         var clearCookie = tokenService.clearRefreshTokenCookie();
 
-        MDC.put("service", serviceName);
+        MDC.put("service", "delete-account");
         MDC.put("nickname", nickname);
         logger.info("Użytkownik " + user.getNickname() + " usunął swoje konto.");
         MDC.clear();
