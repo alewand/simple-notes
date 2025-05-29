@@ -39,7 +39,7 @@ function AccountInfo() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 mt-5">
-      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mt-1">
+      <div className="w-full max-w-4xl flex flex-col gap-4 px-4 mt-1 min-h-[600px]">
         <EditableField
           label="Nick"
           name="nickname"
@@ -76,6 +76,15 @@ function AccountInfo() {
           type="text"
           editable={false}
         />
+        <EditableField
+          label="Liczba Notatek"
+          name="notesCount"
+          value={"0"}
+          onConfirm={onConfirm}
+          isLoading={isLoading}
+          type="text"
+          editable={false}
+        ></EditableField>
       </div>
     </div>
   );

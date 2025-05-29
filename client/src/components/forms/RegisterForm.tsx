@@ -79,7 +79,7 @@ function RegisterForm() {
             onChange={handleChange}
             required
             disabled={isLoading}
-            placeholder="jan@clingclang.com"
+            placeholder="jan@simplenotes.com"
           />
 
           <FormField

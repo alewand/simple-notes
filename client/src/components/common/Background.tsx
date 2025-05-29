@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import bgImage from "../../assets/bg.png";
 
 interface BackgroundProps {
   children?: ReactNode;
@@ -9,8 +10,13 @@ interface BackgroundProps {
  */
 function Background({ children }: BackgroundProps) {
   return (
-    <div className="w-full min-h-screen bg-fixed bg-cover bg-center relative bg-gray-100">
-      {children}
+    <div
+      className="w-full min-h-screen bg-fixed bg-cover bg-center relative"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      <div className={`backdrop-blur-sm bg-white/65 w-full min-h-screen`}>
+        {children}
+      </div>
     </div>
   );
 }
