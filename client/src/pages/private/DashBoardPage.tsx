@@ -11,8 +11,8 @@ function DashboardPage() {
       <Background>
         <SideBar options={getSideBarOptions("Dashboard")} />
         <div className="ml-12 sm:ml-16">
-          <div className="flex flex-col items-center justify-center h-screen pl-6 pr-6">
-            <Logo size="xl" />
+          <div className="flex flex-col items-center justify-center h-screen px-6">
+            <Logo size="lg" />
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mt-6 text-white drop-shadow-xl">
               {dashBoardPageContent.title}
             </h1>

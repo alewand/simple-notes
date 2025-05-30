@@ -1,11 +1,11 @@
 import type { User } from "../types/others";
 import type { ResetPasswordFormData } from "../types/requests";
-import type { CommonResponse, UserResponse } from "../types/responses";
+import type { CommonResponse } from "../types/responses";
 import api, { handleApiError } from "./api";
 
 export const getUserFromAPI = async (): Promise<User> => {
-  const response = await api.get<UserResponse>("/api/user");
-  const user = response.data.user;
+  const response = await api.get<User>("/api/user/get");
+  const user = response.data;
   localStorage.setItem("user", JSON.stringify(user));
   return user;
 };
