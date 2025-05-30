@@ -8,6 +8,7 @@ import me.alewand.server.models.User;
 import me.alewand.server.services.NoteService;
 import me.alewand.server.types.requests.NoteRequest;
 import me.alewand.server.types.responses.CommonResponse;
+import me.alewand.server.types.responses.NoteResponse;
 import me.alewand.server.types.responses.NotesResponse;
 
 import java.util.UUID;
@@ -35,7 +36,15 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/get/{noteId}")
+    public ResponseEntity<? extends CommonResponse> getNote(@PathVariable UUID noteId,
+            @AuthenticationPrincipal User user) {
+        var note = noteService.getNote(noteId, user, "note-get");
+
+        return ResponseEntity.ok().body(new NoteResponse(note));
+    }
+
+    @GetMapping("/get-all")
     public ResponseEntity<? extends CommonResponse> getNotes(@AuthenticationPrincipal User user) {
         var notes = noteService.getNotes(user);
 

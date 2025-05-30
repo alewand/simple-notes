@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import me.alewand.server.errors.NoteDoesntBelongToUserException;
+import me.alewand.server.errors.NoteNotFoundException;
 import me.alewand.server.errors.NoteToDeleteDoesntBelongToUserException;
 import me.alewand.server.errors.NoteToDeleteNotFoundException;
 import me.alewand.server.errors.NoteToUpdateDoesntBelongToUserException;
@@ -35,6 +37,20 @@ public class NoteService {
     public List<Note> getNotes(User user) {
         return noteRepository.findAllByUser(user)
                 .orElse(Collections.emptyList());
+    }
+
+    public Note getNote(UUID noteId, User user, String service) {
+        var note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new NoteNotFoundException(Map.of("service", service, "requestedNoteId",
+                        noteId.toString(), "nickname", user.getNickname())));
+
+        if (!note.getUser().getUserId().equals(user.getUserId())) {
+            throw new NoteDoesntBelongToUserException(Map.of("service", service, "requestedNoteId",
+                    noteId.toString(), "noteOwnerNickname", note.getUser().getNickname(), "nickname",
+                    user.getNickname()));
+        }
+
+        return note;
     }
 
     /**
