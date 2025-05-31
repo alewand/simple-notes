@@ -7,8 +7,6 @@ import jakarta.validation.Valid;
 import me.alewand.server.models.User;
 import me.alewand.server.services.AuthService;
 import me.alewand.server.services.TokenService;
-import me.alewand.server.services.ValidationService;
-import me.alewand.server.types.others.PasswordWrapper;
 import me.alewand.server.types.requests.ChangePasswordRequest;
 import me.alewand.server.types.requests.ConfirmRequest;
 import me.alewand.server.types.requests.LoginRequest;
