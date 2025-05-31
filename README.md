@@ -10,7 +10,7 @@ Simple web application for creating and storing notes.
 - [Technologies](#technologies)
 - [Requirements](#requirements)
 - [How To Run](#how-to-run)
-- [Screenshots](#screenshots)
+- [Gallery](#gallery)
 
 ## About The Project
 
@@ -76,7 +76,7 @@ docker compose up
 
 [⬆️ Go Back Up ⬆️](#table-of-contents)
 
-## Screenshots
+## Gallery
 
 Some screenshots to present UI.
 
