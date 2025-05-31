@@ -12,6 +12,9 @@ const colorMap = {
   red: "bg-red-600 hover:bg-red-700",
 };
 
+/**
+ * A button component for notes with customizable name, icon, color, and click handler.
+ */
 function NoteButton({ name, icon, color, onClick }: NoteButtonProps) {
   return (
     <button
