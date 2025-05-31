@@ -39,6 +39,17 @@ public class NoteService {
                 .orElse(Collections.emptyList());
     }
 
+    /**
+     * Retrieves a specific note by its ID for a given user.
+     *
+     * @param noteId  the ID of the note to retrieve
+     * @param user    the user who owns the note
+     * @param service the service name for logging or error handling
+     * @return the note if found
+     * @throws NoteNotFoundException           if the note does not exist
+     * @throws NoteDoesntBelongToUserException if the note does not belong to the
+     *                                         user
+     */
     public Note getNote(UUID noteId, User user, String service) {
         var note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteNotFoundException(Map.of("service", service, "requestedNoteId",

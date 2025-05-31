@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.validation.Validation;
 import me.alewand.server.errors.EmailTakenException;
 import me.alewand.server.errors.InvalidPasswordDuringAuthenticationException;
 import me.alewand.server.errors.NicknameTakenException;
@@ -77,6 +76,22 @@ public class AuthService {
         validationService.validate(user);
 
         return userRepository.save(user);
+    }
+
+    /**
+     * Changes the password of an existing user.
+     *
+     * @param user        the User object whose password is to be changed
+     * @param newPassword the new password for the user
+     * @throws NicknameTakenException if the new nickname is already taken
+     * @throws EmailTakenException    if the new email is already taken
+     */
+    public void changeUserPassword(User user, String newPassword) {
+        var passwordValidation = new PasswordWrapper(newPassword);
+        validationService.validate(passwordValidation);
+
+        user.setPassword(passwordEncoder.encode(passwordValidation.getPassword()));
+        userRepository.save(user);
     }
 
     /**

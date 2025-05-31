@@ -16,8 +16,8 @@ export const changeUserInfoField = async (
 ): Promise<CommonResponse> => {
   try {
     const response = await api.post<CommonResponse>("/api/user/change-info", {
-      name: name,
-      value: value,
+      fieldName: name,
+      fieldValue: value,
     });
     return response.data;
   } catch (error: unknown) {
@@ -33,7 +33,7 @@ export const changePassword = async (
 ): Promise<CommonResponse> => {
   try {
     const response = await api.post<CommonResponse>(
-      "/api/user/change-password",
+      "/api/auth/change-password",
       data,
     );
     return response.data;

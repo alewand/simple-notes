@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import me.alewand.server.models.User;
 import me.alewand.server.services.AuthService;
 import me.alewand.server.services.TokenService;
+import me.alewand.server.services.ValidationService;
+import me.alewand.server.types.others.PasswordWrapper;
+import me.alewand.server.types.requests.ChangePasswordRequest;
 import me.alewand.server.types.requests.ConfirmRequest;
 import me.alewand.server.types.requests.LoginRequest;
 import me.alewand.server.types.requests.RegisterRequest;
@@ -31,10 +34,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final TokenService tokenService;
+    private final ValidationService validationService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class.getName());
 
-    public AuthController(AuthService authService, TokenService tokenService) {
+    public AuthController(AuthService authService, TokenService tokenService, ValidationService validationService) {
+        this.validationService = validationService;
         this.authService = authService;
         this.tokenService = tokenService;
     }
@@ -111,6 +116,37 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", clearCookie.toString())
                 .body(new CommonResponse("Wylogowano ze wszystkich urządzeń."));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<CommonResponse> changePassword(@AuthenticationPrincipal User user,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        MDC.put("service", "change-password");
+        MDC.put("nickname", user.getNickname());
+
+        var oldPassword = request.getOldPassword().trim();
+        var newPassword = request.getNewPassword().trim();
+
+        authService.getAuthenticatedUser(user.getNickname(), oldPassword,
+                "change-password");
+
+        if (oldPassword.equals(newPassword)) {
+
+            logger.info("Użytkownik " + user.getNickname()
+                    + " próbował zmienić hasło na to samo, co obecne.");
+            MDC.clear();
+
+            return ResponseEntity.status(400)
+                    .body(new CommonResponse("Nowe hasło nie może być takie samo jak stare."));
+        }
+
+        logger.info("Użytkownik " + user.getNickname()
+                + " zmienił swoje hasło.");
+        MDC.clear();
+
+        authService.changeUserPassword(user, newPassword);
+
+        return ResponseEntity.ok(new CommonResponse("Hasło zostało zmienione pomyślnie."));
     }
 
     @PostMapping("/refresh")
